@@ -55,8 +55,8 @@
       </div>
     </div>
 
-    <!-- Briefing / Top Actions — full width bottom -->
-    <BriefingCard :emails="emails" :leads="leads" :loading="loading" />
+    <!-- CEO Briefing — full width bottom (source: Supabase briefings table, written by P4) -->
+    <BriefingCard :briefing="briefing" :loading="loading" />
 
   </div>
 </template>
@@ -68,10 +68,11 @@ import EmailList from '../components/EmailList.vue'
 import LeadList from '../components/LeadList.vue'
 import BriefingCard from '../components/BriefingCard.vue'
 
-const emails  = ref([])
-const leads   = ref([])
-const loading = ref(true)
-const error   = ref(null)
+const emails   = ref([])
+const leads    = ref([])
+const briefing = ref(null)
+const loading  = ref(true)
+const error    = ref(null)
 
 const urgentEmailCount = computed(() =>
   emails.value.filter(e => ['high', 'critical'].includes(e.urgency_level)).length
@@ -79,10 +80,12 @@ const urgentEmailCount = computed(() =>
 const hotLeadCount = computed(() =>
   leads.value.filter(l => l.lead_status === 'hot').length
 )
-const actionsNeeded = computed(() =>
-  emails.value.filter(e => e.action_required).length +
-  leads.value.filter(l => !l.is_contacted).length
-)
+const actionsNeeded = computed(() => {
+  const items = briefing.value?.action_items
+  if (!items) return 0
+  const arr = Array.isArray(items) ? items : (JSON.parse(items) || [])
+  return arr.length
+})
 
 const now = new Date()
 const currentDate = now.toLocaleDateString('id-ID', {
@@ -99,7 +102,7 @@ async function fetchData() {
 
   const since48h = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString()
 
-  const [emailRes, leadRes] = await Promise.all([
+  const [emailRes, leadRes, briefingRes] = await Promise.all([
     supabase
       .from('email_intelligence')
       .select('subject, sender_name, urgency_level, urgency_score, action_required, action_items, recommended_response, received_at, email_category')
@@ -114,16 +117,10 @@ async function fetchData() {
       .in('lead_status', ['hot', 'warm'])
       .eq('is_contacted', false)
       .order('lead_score', { ascending: false })
-      .limit(10)
-  ])
+      .limit(10),
 
-  if (emailRes.error) { error.value = `Emails: ${emailRes.error.message}`; return }
-  if (leadRes.error)  { error.value = `Leads: ${leadRes.error.message}`;  return }
-
-  emails.value  = emailRes.data || []
-  leads.value   = leadRes.data  || []
-  loading.value = false
-}
-
-onMounted(fetchData)
-</script>
+    supabase
+      .from('briefings')
+      .select('id, created_at, summary, urgent_emails, hot_leads, action_items')
+      .order('created_at', { ascending: false })
+      .l
