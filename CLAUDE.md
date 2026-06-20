@@ -12,14 +12,14 @@ The V0 is a single read-only dashboard page. No auth redesign. No multi-page app
 ## Build Methodology
 This project follows **Sphere Method v2.1 (System Studio Framework)** by Legacya Sphere.
 
-**Current phase: Phase 3 — Development**
+**Current phase: Phase 3 — COMPLETE ✓**
 Exit criteria: Features complete, no console errors, CI passing.
 
 Apply the Product Review Checklist before calling anything done:
-- [ ] UX: loading states, error states, empty states all present
-- [ ] Performance: no N+1 queries, Supabase queries use `.select()` with only needed columns
+- [x] UX: loading states, error states, empty states all present ✓
+- [x] Performance: no N+1 queries, Supabase queries use `.select()` ✓
 - [ ] AI: n/a for V0 frontend
-- [ ] Security: no secrets in client code beyond the Supabase anon key (which is safe for public by design)
+- [x] Security: no secrets in client code beyond the Supabase anon key (which is safe for public by design) ✓
 
 ---
 
@@ -57,6 +57,7 @@ ANON_KEY: see src/services/supabase.js
 Tables read by this dashboard:
 - `email_intelligence` — urgent/actionable emails from P1 n8n workflow
 - `leads` — scored leads from P2 n8n workflow
+- `briefings` — daily CEO briefing from P4 n8n workflow (fields: id, created_at, summary, urgent_emails, hot_leads, action_items)
 
 **If Supabase queries return empty with no error**, RLS is likely blocking the anon key.
 Fix: enable Row Level Security with a policy that allows anon SELECT on both tables.
@@ -109,3 +110,7 @@ Before adding any feature, ask:
 - Can this wait for V1?
 
 If any answer is "no / noise / yes it can wait" — don't build it.
+
+---
+
+> **Phase 4 (V1) is locked until 3-day stability window ends (started 2026-06-20). No new features before 2026-06-23.**
