@@ -42,7 +42,7 @@
             <div class="flex items-center gap-2 mb-1.5">
               <span class="text-xs font-mono font-bold text-[#333]">0{{ i + 1 }}</span>
               <span :class="sourceBadge(item.source)" class="text-[9px] tracking-wider font-mono font-bold px-1.5 py-0.5 rounded">
-                {{ item.source?.toUpperCase() || 'ACTION' }}
+                {{ item.source ? item.source.toUpperCase() : 'ACTION' }}
               </span>
             </div>
             <p class="text-xs text-[#c0c0c0] leading-snug">{{ item.text || item }}</p>
@@ -85,4 +85,35 @@ const urgentEmailCount = computed(() => {
   const e = props.briefing?.urgent_emails
   if (!e) return 0
   const arr = Array.isArray(e) ? e : tryParse(e, [])
-  re
+  return arr.length
+})
+
+const hotLeadCount = computed(() => {
+  const l = props.briefing?.hot_leads
+  if (!l) return 0
+  const arr = Array.isArray(l) ? l : tryParse(l, [])
+  return arr.length
+})
+
+function tryParse(str, fallback) {
+  try { return JSON.parse(str) } catch { return fallback }
+}
+
+function sourceBadge(source) {
+  const map = {
+    email: 'bg-orange-500/15 text-orange-500/70 border border-orange-500/20',
+    lead:  'bg-rose-500/15 text-rose-500/70 border border-rose-500/20'
+  }
+  return map[source] || 'bg-indigo-500/15 text-indigo-500/70 border border-indigo-500/20'
+}
+
+function timeAgo(iso) {
+  if (!iso) return ''
+  const diff = Date.now() - new Date(iso).getTime()
+  const h = Math.floor(diff / 3600000)
+  const d = Math.floor(h / 24)
+  if (d > 0) return `${d}d ago`
+  if (h > 0) return `${h}h ago`
+  return 'today'
+}
+</script>

@@ -83,9 +83,13 @@ const hotLeadCount = computed(() =>
 const actionsNeeded = computed(() => {
   const items = briefing.value?.action_items
   if (!items) return 0
-  const arr = Array.isArray(items) ? items : (JSON.parse(items) || [])
+  const arr = Array.isArray(items) ? items : tryParse(items, [])
   return arr.length
 })
+
+function tryParse(str, fallback) {
+  try { return JSON.parse(str) } catch { return fallback }
+}
 
 const now = new Date()
 const currentDate = now.toLocaleDateString('id-ID', {
@@ -123,4 +127,19 @@ async function fetchData() {
       .from('briefings')
       .select('id, created_at, summary, urgent_emails, hot_leads, action_items')
       .order('created_at', { ascending: false })
-      .l
+      .limit(1)
+      .maybeSingle()
+  ])
+
+  if (emailRes.error)    { error.value = `Emails: ${emailRes.error.message}`;      loading.value = false; return }
+  if (leadRes.error)     { error.value = `Leads: ${leadRes.error.message}`;        loading.value = false; return }
+  if (briefingRes.error) { error.value = `Briefing: ${briefingRes.error.message}`; loading.value = false; return }
+
+  emails.value   = emailRes.data    || []
+  leads.value    = leadRes.data     || []
+  briefing.value = briefingRes.data || null
+  loading.value  = false
+}
+
+onMounted(fetchData)
+</script>
