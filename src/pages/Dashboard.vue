@@ -45,24 +45,22 @@
 
     <!-- Main grid -->
     <div class="grid grid-cols-5 gap-4 mb-4">
-      <!-- Email Intelligence — primary panel (3/5 width) -->
       <div class="col-span-3">
         <EmailList :emails="emails" :loading="loading" />
       </div>
-      <!-- Hot Leads (2/5 width) -->
       <div class="col-span-2">
         <LeadList :leads="leads" :loading="loading" />
       </div>
     </div>
 
-    <!-- CEO Briefing — full width bottom (source: Supabase briefings table, written by P4) -->
+    <!-- CEO Briefing -->
     <BriefingCard :briefing="briefing" :loading="loading" />
 
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { supabase } from '../services/supabase.js'
 import EmailList from '../components/EmailList.vue'
 import LeadList from '../components/LeadList.vue'
@@ -74,6 +72,23 @@ const briefing = ref(null)
 const loading  = ref(true)
 const error    = ref(null)
 
+// --- Live clock (updates every minute) ---
+const now = ref(new Date())
+let clockTimer = null
+
+const currentDate = computed(() =>
+  now.value.toLocaleDateString('id-ID', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+    timeZone: 'Asia/Jakarta'
+  })
+)
+const currentTime = computed(() =>
+  now.value.toLocaleTimeString('id-ID', {
+    hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta'
+  })
+)
+
+// --- KPI computed ---
 const urgentEmailCount = computed(() =>
   emails.value.filter(e => ['high', 'critical'].includes(e.urgency_level)).length
 )
@@ -91,15 +106,7 @@ function tryParse(str, fallback) {
   try { return JSON.parse(str) } catch { return fallback }
 }
 
-const now = new Date()
-const currentDate = now.toLocaleDateString('id-ID', {
-  weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
-  timeZone: 'Asia/Jakarta'
-})
-const currentTime = now.toLocaleTimeString('id-ID', {
-  hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta'
-})
-
+// --- Data ---
 async function fetchData() {
   loading.value = true
   error.value   = null
@@ -141,5 +148,13 @@ async function fetchData() {
   loading.value  = false
 }
 
-onMounted(fetchData)
+onMounted(() => {
+  fetchData()
+  // Tick every 30s — keeps time accurate without hammering
+  clockTimer = setInterval(() => { now.value = new Date() }, 30000)
+})
+
+onUnmounted(() => {
+  if (clockTimer) clearInterval(clockTimer)
+})
 </script>
