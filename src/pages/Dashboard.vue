@@ -203,13 +203,13 @@ const totalSignalCount = computed(() =>
 
 const signalBars = computed(() => {
   const values = [
-    urgentEmailCount.value + 1,
-    hotLeadCount.value + 2,
-    actionsNeeded.value + 1,
-    totalSignalCount.value + 2,
-    Math.max(hotLeadCount.value, urgentEmailCount.value) + 2,
-    Math.max(actionsNeeded.value, 1),
-    totalSignalCount.value + 1
+    urgentEmailCount.value,
+    hotLeadCount.value,
+    actionsNeeded.value,
+    totalSignalCount.value,
+    Math.max(hotLeadCount.value, urgentEmailCount.value),
+    actionsNeeded.value,
+    totalSignalCount.value
   ]
 
   return values.map((value, index) => ({
@@ -219,12 +219,13 @@ const signalBars = computed(() => {
   }))
 })
 
-const rhythmDays = computed(() =>
-  ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((label, index) => ({
+const rhythmDays = computed(() => {
+  const day = now.value.getDay()
+  return ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((label, index) => ({
     label,
-    active: index === new Date().getDay() - 1 || (new Date().getDay() === 0 && index === 6)
+    active: index === day - 1 || (day === 0 && index === 6)
   }))
-)
+})
 
 const currentDate = computed(() =>
   now.value.toLocaleDateString('id-ID', {
@@ -261,7 +262,7 @@ async function fetchData() {
   const [emailRes, leadRes, briefingRes] = await Promise.all([
     supabase
       .from('email_intelligence')
-      .select('subject, sender_name, urgency_level, urgency_score, action_required, action_items, recommended_response, received_at, email_category')
+      .select('subject, sender_name, urgency_level, urgency_score, action_required, action_items, recommended_response, received_at, email_category, thread_id')
       .or('urgency_level.in.(high,critical),action_required.eq.true')
       .gte('received_at', since48h)
       .order('urgency_score', { ascending: false })
@@ -283,24 +284,12 @@ async function fetchData() {
       .maybeSingle()
   ])
 
-  if (emailRes.error) {
-    error.value = `Emails: ${emailRes.error.message}`
-    loading.value = false
-    return
-  }
+  const errors = []
+  if (emailRes.error) errors.push(`Emails: ${emailRes.error.message}`)
+  if (leadRes.error) errors.push(`Leads: ${leadRes.error.message}`)
+  if (briefingRes.error) errors.push(`Briefing: ${briefingRes.error.message}`)
 
-  if (leadRes.error) {
-    error.value = `Leads: ${leadRes.error.message}`
-    loading.value = false
-    return
-  }
-
-  if (briefingRes.error) {
-    error.value = `Briefing: ${briefingRes.error.message}`
-    loading.value = false
-    return
-  }
-
+  error.value = errors.length ? errors.join(' | ') : null
   emails.value = emailRes.data || []
   leads.value = leadRes.data || []
   briefing.value = briefingRes.data || null

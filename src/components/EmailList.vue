@@ -31,12 +31,20 @@
         v-for="(email, i) in emails"
         :key="i"
         class="rounded-2xl border border-[#f5f0e9]/8 bg-[#02040b]/32 p-4 transition duration-200 hover:border-[#e0c58f]/24 hover:bg-[#112250]/24"
+        :class="email.thread_id ? 'cursor-pointer' : ''"
+        @click="openEmail(email)"
       >
         <div class="mb-3 flex items-center justify-between gap-3">
           <span :class="urgencyClass(email.urgency_level)" class="rounded-full px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.16em]">
             {{ email.urgency_level || 'low' }}
           </span>
-          <span class="font-mono text-[11px] text-[#d9c6c2]/42">{{ timeAgo(email.received_at) }}</span>
+          <div class="flex items-center gap-2">
+            <span class="font-mono text-[11px] text-[#d9c6c2]/42">{{ timeAgo(email.received_at) }}</span>
+            <svg v-if="email.thread_id" xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 text-[#d9c6c2]/30 group-hover:text-[#e0c58f]/60" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M11 3a1 1 0 100 2h2.586l-6.293 6.293a1 1 0 101.414 1.414L15 6.414V9a1 1 0 102 0V4a1 1 0 00-1-1h-5z" />
+              <path d="M5 5a2 2 0 00-2 2v8a2 2 0 002 2h8a2 2 0 002-2v-3a1 1 0 10-2 0v3H5V7h3a1 1 0 000-2H5z" />
+            </svg>
+          </div>
         </div>
 
         <p class="mb-1 truncate text-sm font-semibold leading-tight text-[#f5f0e9]">
@@ -52,9 +60,9 @@
           {{ email.recommended_response }}
         </p>
 
-        <div v-if="email.action_items?.length > 0" class="mt-3">
+        <div v-if="parseActionItems(email.action_items).length > 0" class="mt-3">
           <span class="rounded-full bg-[#e0c58f]/10 px-2.5 py-1 font-mono text-[10px] text-[#e0c58f]">
-            {{ email.action_items.length }} action{{ email.action_items.length > 1 ? 's' : '' }}
+            {{ parseActionItems(email.action_items).length }} action{{ parseActionItems(email.action_items).length > 1 ? 's' : '' }}
           </span>
         </div>
       </article>
@@ -67,6 +75,21 @@ defineProps({
   emails: { type: Array, default: () => [] },
   loading: { type: Boolean, default: false }
 })
+
+function parseActionItems(items) {
+  if (!items) return []
+  if (Array.isArray(items)) return items
+  try { return JSON.parse(items) } catch { return [] }
+}
+
+function openEmail(email) {
+  const id = email.thread_id || email.message_id || email.gmail_thread_id
+  if (id) {
+    window.open(`https://mail.google.com/mail/#inbox/${id}`, '_blank')
+  } else if (email.gmail_link) {
+    window.open(email.gmail_link, '_blank')
+  }
+}
 
 function urgencyClass(level) {
   const map = {
