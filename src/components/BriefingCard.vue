@@ -1,71 +1,61 @@
 <template>
-  <section class="glass-card h-full rounded-[1.5rem] p-5">
-    <div class="mb-5 flex items-center justify-between gap-3">
+  <section class="card h-full p-4">
+    <div class="mb-4 flex items-center justify-between gap-3">
       <div>
-        <h2 class="text-sm font-semibold text-[#f5f0e9]">CEO Briefing</h2>
-        <p class="mt-1 text-xs text-[#d9c6c2]/45">AI-generated daily summary</p>
+        <h2 class="text-sm font-semibold text-[--text-primary]">Today's Focus</h2>
+        <p class="mt-1 text-xs text-[--text-muted]">AI-generated daily summary</p>
       </div>
-      <span v-if="briefing" class="rounded-full border border-[#e0c58f]/20 px-3 py-1 font-mono text-[11px] text-[#e0c58f]">
+      <span v-if="briefing" class="rounded-full border border-[#2A4D88]/25 px-3 py-1 font-mono text-[11px] text-[--accent]">
         {{ timeAgo(briefing.created_at) }}
       </span>
     </div>
 
-    <!-- Loading -->
     <div v-if="loading" class="space-y-3">
-      <div v-for="i in 3" :key="i" class="animate-pulse rounded-2xl border border-[#f5f0e9]/8 bg-[#02040b]/30 p-4">
-        <div class="mb-2 h-3 w-full rounded bg-[#3c5070]/25"></div>
-        <div class="h-3 w-3/4 rounded bg-[#3c5070]/20"></div>
+      <div v-for="i in 3" :key="i" class="animate-pulse rounded-xl border border-[--border] bg-[--bg] p-4">
+        <div class="mb-2 h-3 w-full rounded bg-[--surface-2]"></div>
+        <div class="h-3 w-3/4 rounded bg-[--surface-2]"></div>
       </div>
     </div>
 
-    <!-- Empty -->
-    <div v-else-if="!briefing" class="flex min-h-56 flex-col items-center justify-center rounded-2xl border border-[#f5f0e9]/8 bg-[#02040b]/28 text-center">
-      <div class="mb-3 flex h-11 w-11 items-center justify-center rounded-full border border-[#e0c58f]/25 bg-[#e0c58f]/10 font-mono text-xs text-[#e0c58f]">
+    <div v-else-if="!briefing" class="flex min-h-40 flex-col items-center justify-center rounded-xl border border-[--border] bg-[--bg] text-center">
+      <div class="mb-3 flex h-11 w-11 items-center justify-center rounded-full border border-[#2A4D88]/25 bg-[#2A4D88]/10 font-mono text-xs text-[--accent]">
         07:00
       </div>
-      <p class="text-sm text-[#f5f0e9]">No briefing yet.</p>
-      <p class="mt-1 text-xs text-[#d9c6c2]/45">Runs daily at 07:00 WIB.</p>
+      <p class="text-sm text-[--text-primary]">No briefing yet.</p>
+      <p class="mt-1 text-xs text-[--text-muted]">Runs daily at 07:00 WIB.</p>
     </div>
 
-    <!-- Briefing content -->
     <div v-else class="space-y-3">
-      <!-- Summary -->
-      <div v-if="briefing.summary" class="rounded-2xl border border-[#e0c58f]/15 bg-[#e0c58f]/6 p-4">
-        <p class="mb-2 font-mono text-[10px] uppercase tracking-[0.22em] text-[#e0c58f]/70">Summary</p>
-        <p class="text-xs leading-5 text-[#d9c6c2]/78">{{ briefing.summary }}</p>
+      <div v-if="briefing.summary" class="rounded-xl border border-[#2A4D88]/20 bg-[#2A4D88]/5 p-4">
+        <p class="mb-2 font-mono text-[10px] uppercase tracking-[0.22em] text-[--accent]">Summary</p>
+        <p class="text-xs leading-5 text-[--text-secondary]">{{ cleanBriefingText(briefing.summary) }}</p>
       </div>
 
-      <!-- Action items -->
-      <div v-if="actionItems.length > 0" class="rounded-2xl border border-[#f5f0e9]/8 bg-[#02040b]/32 p-4">
-        <p class="mb-3 font-mono text-[10px] uppercase tracking-[0.22em] text-[#d9c6c2]/46">
+      <div v-if="actionItems.length > 0" class="rounded-xl border border-[--border] bg-[--bg] p-4">
+        <p class="mb-3 font-mono text-[10px] uppercase tracking-[0.22em] text-[--text-muted]">
           Action Items
-          <span class="ml-2 rounded-full bg-[#e0c58f]/12 px-2 py-0.5 text-[#e0c58f]">{{ actionItems.length }}</span>
+          <span class="ml-2 rounded-full bg-[#2A4D88]/10 px-2 py-0.5 text-[--accent]">{{ actionItems.length }}</span>
         </p>
-        <ul class="space-y-2">
-          <li
-            v-for="(item, i) in actionItems"
-            :key="i"
-            class="flex items-start gap-2 text-xs text-[#d9c6c2]/65"
-          >
-            <span class="mt-0.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#e0c58f]/60"></span>
-            {{ item }}
+        <ul class="mt-2 space-y-2">
+          <li v-for="(item, i) in actionItems" :key="i" class="flex items-start gap-2 text-xs text-[--text-secondary]">
+            <span class="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[--accent]"></span>
+            <span>{{ cleanBriefingText(item) }}</span>
           </li>
         </ul>
       </div>
 
-      <!-- Signals summary -->
       <div class="grid grid-cols-2 gap-2">
-        <div class="rounded-2xl border border-[#f5f0e9]/8 bg-[#02040b]/28 p-3 text-center">
-          <div class="font-mono text-lg font-semibold" :class="urgentCount > 0 ? 'text-[#f97316]' : 'text-[#d9c6c2]/30'">
+        <div class="rounded-xl border border-[--border] bg-[--bg] p-3 text-center">
+          <div class="font-mono text-lg font-semibold" :class="urgentCount > 0 ? 'text-[--critical]' : 'text-[--text-muted]'">
             {{ urgentCount }}
           </div>
-          <p class="mt-1 text-[10px] text-[#d9c6c2]/40">urgent emails</p>
+          <p class="mt-1 text-[10px] text-[--text-muted]">urgent emails</p>
         </div>
-        <div class="rounded-2xl border border-[#f5f0e9]/8 bg-[#02040b]/28 p-3 text-center">
-          <div class="font-mono text-lg font-semibold" :class="hotCount > 0 ? 'text-[#f43f5e]' : 'text-[#d9c6c2]/30'">
+        <div class="rounded-xl border border-[--border] bg-[--bg] p-3 text-center">
+          <div class="font-mono text-lg font-semibold" :class="hotCount > 0 ? 'text-[--hot]' : 'text-[--text-muted]'">
             {{ hotCount }}
           </div>
-          <p class="mt-1 text-[10px] text-[#d9c6c2]/40">hot leads</p>
+          <p class="mt-1 text-[10px] text-[--text-muted]">hot leads</p>
         </div>
       </div>
     </div>
@@ -100,6 +90,26 @@ const hotCount = computed(() => {
   if (typeof val === 'number') return val
   return 0
 })
+
+function cleanBriefingText(text) {
+  if (!text) return ''
+  let clean = text
+  try {
+    const parsed = JSON.parse(text)
+    clean = parsed.summary || parsed.content || parsed.text || JSON.stringify(parsed)
+  } catch {}
+  clean = clean
+    .replace(/```[\s\S]*?```/g, '')
+    .replace(/`([^`]+)`/g, '$1')
+    .replace(/^\s*[\{\[][\s\S]*[\}\]]\s*$/g, '')
+    .replace(/["{}[\]]/g, '')
+    .replace(/\\n/g, '\n')
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    .replace(/\*(.*?)\*/g, '$1')
+    .replace(/^#{1,3}\s+/gm, '')
+    .trim()
+  return clean
+}
 
 function timeAgo(iso) {
   if (!iso) return ''

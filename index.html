@@ -20,104 +20,45 @@
   <style>
     * { box-sizing: border-box; }
     :root {
-      --bg: #050812;
-      --bg-deep: #02040b;
-      --panel: rgba(13, 20, 36, 0.68);
-      --panel-strong: rgba(17, 34, 80, 0.44);
-      --panel-soft: rgba(60, 80, 112, 0.16);
-      --line: rgba(245, 240, 233, 0.12);
-      --line-bright: rgba(224, 197, 143, 0.28);
-      --text: #f5f0e9;
-      --muted: #d9c6c2;
-      --dim: rgba(217, 198, 194, 0.58);
-      --gold: #e0c58f;
-      --sapphire: #3c5070;
-      --royal: #112250;
-      --danger: #ef4444;
-      --warning: #f97316;
-      --hot: #f43f5e;
+      --bg:             #F2F4F7;
+      --surface:        #FFFFFF;
+      --surface-2:      #D9D9D8;
+      --border:         #B1BBC8;
+      --accent:         #2A4D88;
+      --accent-2:       #7C94B8;
+      --text-primary:   #1A2332;
+      --text-secondary: #3D4F63;
+      --text-muted:     #6B7A8D;
+      --critical:       #C0392B;
+      --high:           #D35400;
+      --hot:            #A93226;
+      --warm:           #1A5276;
     }
 
     html {
-      background: var(--bg-deep);
+      background: var(--bg);
     }
 
     body {
       min-height: 100vh;
-      background:
-        radial-gradient(circle at 50% -18%, rgba(224, 197, 143, 0.36), transparent 15rem),
-        radial-gradient(circle at 76% 12%, rgba(60, 80, 112, 0.48), transparent 22rem),
-        radial-gradient(circle at 20% 20%, rgba(17, 34, 80, 0.68), transparent 26rem),
-        linear-gradient(145deg, #02040b 0%, #070b16 42%, #0c1426 100%);
-      color: var(--text);
+      background: var(--bg);
+      color: var(--text-primary);
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       font-feature-settings: "tnum";
     }
 
-    body::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      background-image:
-        linear-gradient(rgba(245, 240, 233, 0.028) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(245, 240, 233, 0.022) 1px, transparent 1px);
-      background-size: 72px 72px;
-      mask-image: radial-gradient(circle at 50% 20%, black, transparent 72%);
-    }
-
-    .glass-panel {
-      position: relative;
-      overflow: hidden;
-      background:
-        linear-gradient(145deg, rgba(245, 240, 233, 0.075), rgba(245, 240, 233, 0.018)),
-        var(--panel);
-      border: 1px solid var(--line);
-      box-shadow:
-        inset 0 1px 0 rgba(245, 240, 233, 0.09),
-        0 24px 80px rgba(0, 0, 0, 0.36);
-      backdrop-filter: blur(22px);
-      -webkit-backdrop-filter: blur(22px);
-    }
-
-    .glass-panel::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      background: radial-gradient(circle at 35% 0%, rgba(224, 197, 143, 0.12), transparent 16rem);
-      opacity: 0.8;
-    }
-
-    .glass-panel > * {
-      position: relative;
-      z-index: 1;
-    }
-
-    .glass-card {
-      background: rgba(5, 8, 18, 0.36);
-      border: 1px solid rgba(245, 240, 233, 0.095);
-      box-shadow: inset 0 1px 0 rgba(245, 240, 233, 0.055);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
-    }
-
-    .gold-glow {
-      box-shadow:
-        0 0 0 1px rgba(224, 197, 143, 0.24),
-        0 18px 58px rgba(224, 197, 143, 0.12),
-        inset 0 1px 0 rgba(245, 240, 233, 0.12);
-    }
-
-    .soft-divider {
-      border-color: rgba(245, 240, 233, 0.1);
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
     }
 
     ::-webkit-scrollbar { width: 4px; }
-    ::-webkit-scrollbar-track { background: #050812; }
-    ::-webkit-scrollbar-thumb { background: rgba(224, 197, 143, 0.3); border-radius: 2px; }
-    ::-webkit-scrollbar-thumb:hover { background: rgba(224, 197, 143, 0.52); }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--accent-2); }
   </style>
 </head>
 <body>

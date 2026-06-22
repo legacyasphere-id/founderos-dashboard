@@ -1,168 +1,154 @@
 <template>
-  <main class="relative min-h-screen overflow-hidden px-4 py-6 text-[#f5f0e9] sm:px-6 lg:px-8">
-    <div class="pointer-events-none absolute left-1/2 top-[-160px] h-[320px] w-[620px] -translate-x-1/2 rounded-full bg-[#e0c58f]/20 blur-[90px]"></div>
-    <div class="pointer-events-none absolute right-[-120px] top-36 h-[360px] w-[360px] rounded-full bg-[#3c5070]/30 blur-[110px]"></div>
-
+  <main class="min-h-screen bg-[--bg] px-4 py-4 text-[--text-primary] sm:px-6 lg:px-8">
     <section class="relative mx-auto max-w-7xl">
-      <header class="mb-6 pt-4 text-center sm:mb-8 sm:pt-8">
-        <p class="mb-3 font-mono text-[11px] uppercase tracking-[0.42em] text-[#d9c6c2]/55">
-          FounderOS Command Center
-        </p>
-        <h1 class="mx-auto max-w-3xl text-4xl font-semibold leading-[0.98] text-[#f5f0e9] sm:text-5xl lg:text-6xl">
-          Business state in <span class="text-[#e0c58f]">10 seconds</span>
-        </h1>
-        <p class="mx-auto mt-4 max-w-xl text-sm leading-6 text-[#d9c6c2]/62">
-          Urgent signals, active leads, and the daily CEO briefing in one automated founder cockpit.
-        </p>
+
+      <header class="mb-4 pt-2 text-center sm:mb-5 sm:pt-4">
+        <h1 class="text-3xl font-semibold text-[--text-primary] sm:text-4xl">{{ greeting }}</h1>
+        <p class="mx-auto mt-3 max-w-xl text-sm text-[--text-muted]">{{ greetingSubtitle }}</p>
       </header>
 
-      <nav class="mx-auto mb-5 flex max-w-6xl items-center justify-between gap-3 rounded-[2rem] border border-[#f5f0e9]/10 bg-[#050812]/45 p-2 shadow-2xl shadow-black/30 backdrop-blur-2xl">
+      <nav class="mx-auto mb-4 flex max-w-6xl items-center justify-between gap-3 rounded-2xl border border-[--border] bg-[--surface] px-3 py-2 shadow-sm">
         <div class="flex min-w-0 items-center gap-2">
-          <div class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-[#e0c58f]/30 bg-[#112250]/70 font-mono text-sm font-semibold text-[#e0c58f]">
+          <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border border-[#2A4D88]/30 bg-[#2A4D88]/10 font-mono text-sm font-semibold text-[--accent]">
             FO
           </div>
           <div class="hidden items-center gap-1 sm:flex">
-            <span class="rounded-full bg-[#e0c58f]/12 px-4 py-2 text-xs font-medium text-[#f5f0e9] gold-glow">Cockpit</span>
-            <span class="rounded-full px-4 py-2 text-xs text-[#d9c6c2]/58">Emails</span>
-            <span class="rounded-full px-4 py-2 text-xs text-[#d9c6c2]/58">Leads</span>
-            <span class="rounded-full px-4 py-2 text-xs text-[#d9c6c2]/58">Briefing</span>
+            <button
+              @click="setTab('cockpit')"
+              :class="activeTab === 'cockpit' ? 'bg-[#2A4D88]/12 text-[--text-primary]' : 'text-[--text-muted]'"
+              class="rounded-full px-4 py-1.5 text-xs transition"
+            >Cockpit</button>
+            <button
+              @click="setTab('briefing')"
+              :class="activeTab === 'briefing' ? 'bg-[#2A4D88]/12 text-[--text-primary]' : 'text-[--text-muted]'"
+              class="rounded-full px-4 py-1.5 text-xs transition"
+            >Briefing</button>
+            <button
+              @click="setTab('emails')"
+              :class="activeTab === 'emails' ? 'bg-[#2A4D88]/12 text-[--text-primary]' : 'text-[--text-muted]'"
+              class="rounded-full px-4 py-1.5 text-xs transition"
+            >Emails</button>
+            <button
+              @click="setTab('leads')"
+              :class="activeTab === 'leads' ? 'bg-[#2A4D88]/12 text-[--text-primary]' : 'text-[--text-muted]'"
+              class="rounded-full px-4 py-1.5 text-xs transition"
+            >Leads</button>
+            <button
+              disabled
+              title="Coming in V1"
+              class="cursor-not-allowed rounded-full px-4 py-1.5 text-xs text-[--text-muted] opacity-40"
+            >Knowledge</button>
           </div>
         </div>
 
-        <div class="hidden min-w-0 flex-1 justify-center px-2 md:flex">
-          <div class="w-full max-w-sm rounded-full border border-[#f5f0e9]/10 bg-[#02040b]/45 px-4 py-2 text-left text-xs text-[#d9c6c2]/46">
-            Current signals only
-          </div>
+        <div class="hidden min-w-0 flex-1 items-center justify-center gap-2 px-2 md:flex">
+          <input
+            v-model="searchQuery"
+            type="text"
+            placeholder="Search emails, leads, briefing..."
+            class="w-full max-w-sm rounded-full border border-[--border] bg-[--bg] px-4 py-1.5 text-xs text-[--text-primary] outline-none transition focus:border-[#2A4D88]/50 placeholder:text-[--text-muted]"
+          />
+          <span v-if="searchQuery.trim()" class="flex-shrink-0 rounded-full bg-[#2A4D88]/10 px-2.5 py-1 font-mono text-[10px] text-[--accent]">
+            {{ filteredEmails.length + filteredLeads.length }} results
+          </span>
         </div>
 
         <div class="flex items-center gap-2 text-right">
           <div class="hidden sm:block">
-            <div class="text-xs text-[#d9c6c2]/70">{{ currentDate }}</div>
-            <div class="font-mono text-[11px] text-[#e0c58f]/72">{{ currentTime }} WIB</div>
+            <div class="text-xs text-[--text-muted]">{{ currentDate }}</div>
+            <div class="font-mono text-[11px] text-[--accent]">{{ currentTime }} WIB</div>
           </div>
-          <div class="h-10 w-10 rounded-full border border-[#f5f0e9]/10 bg-[#3c5070]/20"></div>
+          <div class="h-9 w-9 rounded-full border border-[--border] bg-[--surface-2]"></div>
         </div>
       </nav>
 
-      <div v-if="error" class="mb-5 rounded-2xl border border-red-400/25 bg-red-500/10 px-4 py-3 text-sm text-red-200 backdrop-blur-xl">
+      <div v-if="error" class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
         {{ error }}
       </div>
 
-      <section class="glass-panel rounded-[2rem] p-3 sm:p-4 lg:p-5">
-        <div class="grid grid-cols-1 gap-3 lg:grid-cols-12 lg:gap-4">
-          <div class="glass-card rounded-[1.5rem] p-5 lg:col-span-6 lg:row-span-2">
-            <div class="mb-5 flex items-start justify-between gap-4">
-              <div>
-                <p class="font-mono text-[11px] uppercase tracking-[0.28em] text-[#d9c6c2]/50">Total signal load</p>
-                <div class="mt-2 flex items-end gap-3">
-                  <span class="font-mono text-4xl font-semibold text-[#f5f0e9]">{{ loading ? '--' : totalSignalCount }}</span>
-                  <span class="pb-1 text-sm text-[#e0c58f]">active signals</span>
-                </div>
-              </div>
-              <span class="rounded-full border border-[#e0c58f]/20 bg-[#e0c58f]/10 px-3 py-1 font-mono text-[11px] text-[#e0c58f]">Live</span>
-            </div>
+      <div v-if="lastUpdatedLabel" class="mb-3 text-right font-mono text-[10px] text-[--text-muted]">
+        Last sync: {{ lastUpdatedLabel }}
+      </div>
 
-            <div class="relative h-64 overflow-hidden rounded-[1.25rem] border border-[#f5f0e9]/10 bg-[#02040b]/42 p-4">
-              <div class="absolute inset-x-4 bottom-10 flex h-40 items-end justify-between gap-3">
-                <div
-                  v-for="bar in signalBars"
-                  :key="bar.label"
-                  class="flex flex-1 flex-col items-center gap-2"
-                >
-                  <div
-                    class="w-full rounded-t-2xl border border-[#f5f0e9]/10 bg-[#3c5070]/22"
-                    :class="bar.active ? 'bg-[#e0c58f]/80 shadow-[0_0_40px_rgba(224,197,143,0.28)]' : ''"
-                    :style="{ height: bar.height }"
-                  ></div>
-                  <span class="font-mono text-[10px] text-[#d9c6c2]/42">{{ bar.label }}</span>
-                </div>
-              </div>
-              <div class="absolute bottom-5 left-5">
-                <div class="font-mono text-3xl text-[#e0c58f]">{{ loading ? '--' : totalSignalCount }}</div>
-                <p class="mt-1 max-w-[13rem] text-xs leading-5 text-[#d9c6c2]/55">Current signals from emails, leads, and briefing actions.</p>
-              </div>
+      <div class="grid grid-cols-1 gap-3 lg:grid-cols-12">
+
+        <!-- Row 1: CEO Briefing (7) + Stats (5) -->
+        <div ref="briefingRef" class="lg:col-span-7">
+          <BriefingCard :briefing="briefing" :loading="loading" />
+        </div>
+
+        <div class="grid grid-cols-3 gap-3 lg:col-span-5 lg:flex lg:flex-col">
+          <div class="card p-4 lg:flex-1">
+            <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-[--text-muted]">Urgent</p>
+            <div class="mt-2 font-mono text-3xl font-semibold" :class="urgentEmailCount > 0 ? 'text-[--critical]' : 'text-[--text-muted]'">
+              {{ loading ? '--' : urgentEmailCount }}
+            </div>
+            <p class="mt-1 text-xs text-[--text-muted]">emails</p>
+          </div>
+          <div class="card p-4 lg:flex-1">
+            <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-[--text-muted]">Hot</p>
+            <div class="mt-2 font-mono text-3xl font-semibold" :class="hotLeadCount > 0 ? 'text-[--hot]' : 'text-[--text-muted]'">
+              {{ loading ? '--' : hotLeadCount }}
+            </div>
+            <p class="mt-1 text-xs text-[--text-muted]">leads</p>
+          </div>
+          <div class="card p-4 lg:flex-1">
+            <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-[--text-muted]">Action</p>
+            <div class="mt-2 font-mono text-3xl font-semibold" :class="actionsNeeded > 0 ? 'text-[--accent]' : 'text-[--text-muted]'">
+              {{ loading ? '--' : actionsNeeded }}
+            </div>
+            <p class="mt-1 text-xs text-[--text-muted]">items</p>
+          </div>
+        </div>
+
+        <!-- Row 2: Emails (7) + Leads (5) -->
+        <div ref="emailsRef" class="lg:col-span-7">
+          <EmailList :emails="filteredEmails" :loading="loading" />
+        </div>
+        <div ref="leadsRef" class="lg:col-span-5">
+          <LeadList :leads="filteredLeads" :loading="loading" />
+        </div>
+
+        <!-- Row 3: Operating Rhythm (6) + Signal Sources (6) -->
+        <div class="card p-4 lg:col-span-6">
+          <div class="mb-4 flex items-center justify-between">
+            <h2 class="text-sm font-semibold text-[--text-primary]">Operating Rhythm</h2>
+            <span class="font-mono text-[11px] text-[--text-muted]">07:00</span>
+          </div>
+          <div class="grid grid-cols-7 gap-2">
+            <div v-for="day in rhythmDays" :key="day.label" class="flex flex-col items-center gap-2">
+              <span class="font-mono text-[10px] text-[--text-muted]">{{ day.label }}</span>
+              <span
+                class="h-8 w-8 rounded-full border border-[--border]"
+                :class="day.active ? 'bg-[--accent]' : 'bg-[--surface-2]'"
+              ></span>
             </div>
           </div>
+          <p class="mt-4 text-xs leading-5 text-[--text-muted]">Daily briefing runs every morning and turns business noise into priorities.</p>
+        </div>
 
-          <div class="grid grid-cols-3 gap-3 lg:col-span-6">
-            <div class="glass-card rounded-[1.25rem] p-4">
-              <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-[#d9c6c2]/46">Urgent</p>
-              <div class="mt-3 font-mono text-3xl font-semibold" :class="urgentEmailCount > 0 ? 'text-[#f97316]' : 'text-[#d9c6c2]/30'">
-                {{ loading ? '--' : urgentEmailCount }}
-              </div>
-              <p class="mt-1 text-xs text-[#d9c6c2]/48">emails</p>
-            </div>
-            <div class="glass-card rounded-[1.25rem] p-4">
-              <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-[#d9c6c2]/46">Hot</p>
-              <div class="mt-3 font-mono text-3xl font-semibold" :class="hotLeadCount > 0 ? 'text-[#f43f5e]' : 'text-[#d9c6c2]/30'">
-                {{ loading ? '--' : hotLeadCount }}
-              </div>
-              <p class="mt-1 text-xs text-[#d9c6c2]/48">leads</p>
-            </div>
-            <div class="glass-card rounded-[1.25rem] p-4">
-              <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-[#d9c6c2]/46">Action</p>
-              <div class="mt-3 font-mono text-3xl font-semibold" :class="actionsNeeded > 0 ? 'text-[#e0c58f]' : 'text-[#d9c6c2]/30'">
-                {{ loading ? '--' : actionsNeeded }}
-              </div>
-              <p class="mt-1 text-xs text-[#d9c6c2]/48">items</p>
-            </div>
+        <div class="card p-4 lg:col-span-6">
+          <div class="mb-4 flex items-center justify-between">
+            <h2 class="text-sm font-semibold text-[--text-primary]">Signal Sources</h2>
+            <span class="rounded-full border border-[#2A4D88]/25 px-2 py-1 font-mono text-[10px] text-[--accent]">n8n</span>
           </div>
-
-          <div class="lg:col-span-3">
-            <LeadList :leads="leads" :loading="loading" />
-          </div>
-
-          <div class="lg:col-span-3">
-            <BriefingCard :briefing="briefing" :loading="loading" />
-          </div>
-
-          <div class="lg:col-span-6">
-            <EmailList :emails="emails" :loading="loading" />
-          </div>
-
-          <div class="glass-card rounded-[1.5rem] p-5 lg:col-span-3">
-            <div class="mb-4 flex items-center justify-between">
-              <h2 class="text-sm font-semibold text-[#f5f0e9]">Operating rhythm</h2>
-              <span class="font-mono text-[11px] text-[#e0c58f]/75">07:00</span>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between rounded-xl bg-[--bg] p-3">
+              <span class="text-xs text-[--text-secondary]">Gmail intelligence</span>
+              <span class="font-mono text-xs text-[--text-primary]">{{ loading ? '--' : emails.length }}</span>
             </div>
-            <div class="grid grid-cols-7 gap-2">
-              <div
-                v-for="day in rhythmDays"
-                :key="day.label"
-                class="flex flex-col items-center gap-2"
-              >
-                <span class="font-mono text-[10px] text-[#d9c6c2]/40">{{ day.label }}</span>
-                <span
-                  class="h-8 w-8 rounded-full border border-[#f5f0e9]/10"
-                  :class="day.active ? 'bg-[#e0c58f] shadow-[0_0_34px_rgba(224,197,143,0.32)]' : 'bg-[#3c5070]/14'"
-                ></span>
-              </div>
+            <div class="flex items-center justify-between rounded-xl bg-[--bg] p-3">
+              <span class="text-xs text-[--text-secondary]">Lead pipeline</span>
+              <span class="font-mono text-xs text-[--text-primary]">{{ loading ? '--' : leads.length }}</span>
             </div>
-            <p class="mt-5 text-xs leading-5 text-[#d9c6c2]/55">Daily briefing runs every morning and turns business noise into priorities.</p>
-          </div>
-
-          <div class="glass-card rounded-[1.5rem] p-5 lg:col-span-3">
-            <div class="mb-5 flex items-center justify-between">
-              <h2 class="text-sm font-semibold text-[#f5f0e9]">Signal sources</h2>
-              <span class="rounded-full border border-[#e0c58f]/20 px-2 py-1 font-mono text-[10px] text-[#e0c58f]">n8n</span>
-            </div>
-            <div class="space-y-3">
-              <div class="flex items-center justify-between rounded-2xl bg-[#02040b]/34 p-3">
-                <span class="text-xs text-[#d9c6c2]/62">Gmail intelligence</span>
-                <span class="font-mono text-xs text-[#f5f0e9]">{{ loading ? '--' : emails.length }}</span>
-              </div>
-              <div class="flex items-center justify-between rounded-2xl bg-[#02040b]/34 p-3">
-                <span class="text-xs text-[#d9c6c2]/62">Lead pipeline</span>
-                <span class="font-mono text-xs text-[#f5f0e9]">{{ loading ? '--' : leads.length }}</span>
-              </div>
-              <div class="flex items-center justify-between rounded-2xl bg-[#02040b]/34 p-3">
-                <span class="text-xs text-[#d9c6c2]/62">CEO briefing</span>
-                <span class="font-mono text-xs text-[#f5f0e9]">{{ briefing ? 'ready' : 'empty' }}</span>
-              </div>
+            <div class="flex items-center justify-between rounded-xl bg-[--bg] p-3">
+              <span class="text-xs text-[--text-secondary]">CEO briefing</span>
+              <span class="font-mono text-xs text-[--text-primary]">{{ briefing ? 'ready' : 'empty' }}</span>
             </div>
           </div>
         </div>
-      </section>
+
+      </div>
     </section>
   </main>
 </template>
@@ -180,6 +166,12 @@ const briefing = ref(null)
 const loading = ref(true)
 const error = ref(null)
 const now = ref(new Date())
+const activeTab = ref('cockpit')
+const searchQuery = ref('')
+const lastUpdated = ref(null)
+const briefingRef = ref(null)
+const emailsRef = ref(null)
+const leadsRef = ref(null)
 let clockTimer = null
 
 const urgentEmailCount = computed(() =>
@@ -201,22 +193,49 @@ const totalSignalCount = computed(() =>
   urgentEmailCount.value + hotLeadCount.value + actionsNeeded.value
 )
 
-const signalBars = computed(() => {
-  const values = [
-    urgentEmailCount.value,
-    hotLeadCount.value,
-    actionsNeeded.value,
-    totalSignalCount.value,
-    Math.max(hotLeadCount.value, urgentEmailCount.value),
-    actionsNeeded.value,
-    totalSignalCount.value
-  ]
-
-  return values.map((value, index) => ({
-    label: ['M', 'T', 'W', 'T', 'F', 'S', 'S'][index],
-    height: `${Math.min(92, 24 + value * 13)}%`,
-    active: index === 3
+const greeting = computed(() => {
+  const h = parseInt(now.value.toLocaleString('en-US', {
+    hour: 'numeric', hour12: false, timeZone: 'Asia/Jakarta'
   }))
+  if (h >= 5 && h < 12) return 'Good Morning, Yoga.'
+  if (h >= 12 && h < 17) return 'Good Afternoon, Yoga.'
+  if (h >= 17 && h < 21) return 'Good Evening, Yoga.'
+  return 'Good Night, Yoga.'
+})
+
+const greetingSubtitle = computed(() => {
+  if (loading.value) return 'Loading your business briefing...'
+  if (urgentEmailCount.value > 0 || hotLeadCount.value > 0) {
+    return `You have ${urgentEmailCount.value} urgent email${urgentEmailCount.value !== 1 ? 's' : ''}, ${hotLeadCount.value} hot lead${hotLeadCount.value !== 1 ? 's' : ''}, and ${actionsNeeded.value} recommended action${actionsNeeded.value !== 1 ? 's' : ''} today.`
+  }
+  return "Here's your latest business summary."
+})
+
+const filteredEmails = computed(() => {
+  if (!searchQuery.value.trim()) return emails.value
+  const q = searchQuery.value.toLowerCase()
+  return emails.value.filter(e =>
+    e.subject?.toLowerCase().includes(q) ||
+    e.sender_name?.toLowerCase().includes(q) ||
+    e.recommended_response?.toLowerCase().includes(q)
+  )
+})
+
+const filteredLeads = computed(() => {
+  if (!searchQuery.value.trim()) return leads.value
+  const q = searchQuery.value.toLowerCase()
+  return leads.value.filter(l =>
+    l.name?.toLowerCase().includes(q) ||
+    l.company?.toLowerCase().includes(q) ||
+    l.qualification_summary?.toLowerCase().includes(q)
+  )
+})
+
+const lastUpdatedLabel = computed(() => {
+  if (!lastUpdated.value) return null
+  return lastUpdated.value.toLocaleTimeString('id-ID', {
+    hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta'
+  }) + ' WIB'
 })
 
 const rhythmDays = computed(() => {
@@ -246,11 +265,18 @@ const currentTime = computed(() =>
 )
 
 function tryParse(str, fallback) {
-  try {
-    return JSON.parse(str)
-  } catch {
-    return fallback
-  }
+  try { return JSON.parse(str) } catch { return fallback }
+}
+
+function scrollToSection(sectionRef) {
+  sectionRef.value?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+}
+
+function setTab(tab) {
+  activeTab.value = tab
+  if (tab === 'briefing') scrollToSection(briefingRef)
+  else if (tab === 'emails') scrollToSection(emailsRef)
+  else if (tab === 'leads') scrollToSection(leadsRef)
 }
 
 async function fetchData() {
@@ -293,14 +319,13 @@ async function fetchData() {
   emails.value = emailRes.data || []
   leads.value = leadRes.data || []
   briefing.value = briefingRes.data || null
+  lastUpdated.value = new Date()
   loading.value = false
 }
 
 onMounted(() => {
   fetchData()
-  clockTimer = setInterval(() => {
-    now.value = new Date()
-  }, 30000)
+  clockTimer = setInterval(() => { now.value = new Date() }, 30000)
 })
 
 onUnmounted(() => {
