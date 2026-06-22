@@ -2,35 +2,38 @@
   <main class="min-h-screen bg-[--bg] px-4 py-4 text-[--text-primary] sm:px-6 lg:px-8">
     <section class="relative mx-auto max-w-7xl">
 
-      <header class="mb-4 pt-2 text-center sm:mb-5 sm:pt-4">
-        <h1 class="text-3xl font-semibold text-[--text-primary] sm:text-4xl">{{ greeting }}</h1>
-        <p class="mx-auto mt-3 max-w-xl text-sm text-[--text-muted]">{{ greetingSubtitle }}</p>
+      <header class="mb-4 overflow-hidden rounded-2xl bg-gradient-to-br from-[#162d5a] via-[#2A4D88] to-[#3a6099] px-6 pb-8 pt-6 text-center shadow-md">
+        <div class="logo-container mx-auto mb-5 h-16 w-16">
+          <img src="/logo.svg" alt="Legacya Sphere" class="logo-rotate h-full w-full" />
+        </div>
+        <h1 class="text-3xl font-semibold text-white sm:text-4xl">{{ greeting }}</h1>
+        <p class="mx-auto mt-3 max-w-xl text-sm text-blue-100/75">{{ greetingSubtitle }}</p>
       </header>
 
       <nav class="mx-auto mb-4 flex max-w-6xl items-center justify-between gap-3 rounded-2xl border border-[--border] bg-[--surface] px-3 py-2 shadow-sm">
         <div class="flex min-w-0 items-center gap-2">
-          <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full border border-[#2A4D88]/30 bg-[#2A4D88]/10 font-mono text-sm font-semibold text-[--accent]">
+          <div class="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full bg-[#2A4D88] font-mono text-sm font-semibold text-white shadow-sm">
             FO
           </div>
           <div class="hidden items-center gap-1 sm:flex">
             <button
               @click="setTab('cockpit')"
-              :class="activeTab === 'cockpit' ? 'bg-[#2A4D88]/12 text-[--text-primary]' : 'text-[--text-muted]'"
+              :class="activeTab === 'cockpit' ? 'bg-[#2A4D88] text-white shadow-sm' : 'text-[--text-muted] hover:text-[--text-primary]'"
               class="rounded-full px-4 py-1.5 text-xs transition"
             >Cockpit</button>
             <button
               @click="setTab('briefing')"
-              :class="activeTab === 'briefing' ? 'bg-[#2A4D88]/12 text-[--text-primary]' : 'text-[--text-muted]'"
+              :class="activeTab === 'briefing' ? 'bg-[#2A4D88] text-white shadow-sm' : 'text-[--text-muted] hover:text-[--text-primary]'"
               class="rounded-full px-4 py-1.5 text-xs transition"
             >Briefing</button>
             <button
               @click="setTab('emails')"
-              :class="activeTab === 'emails' ? 'bg-[#2A4D88]/12 text-[--text-primary]' : 'text-[--text-muted]'"
+              :class="activeTab === 'emails' ? 'bg-[#2A4D88] text-white shadow-sm' : 'text-[--text-muted] hover:text-[--text-primary]'"
               class="rounded-full px-4 py-1.5 text-xs transition"
             >Emails</button>
             <button
               @click="setTab('leads')"
-              :class="activeTab === 'leads' ? 'bg-[#2A4D88]/12 text-[--text-primary]' : 'text-[--text-muted]'"
+              :class="activeTab === 'leads' ? 'bg-[#2A4D88] text-white shadow-sm' : 'text-[--text-muted] hover:text-[--text-primary]'"
               class="rounded-full px-4 py-1.5 text-xs transition"
             >Leads</button>
             <button
@@ -78,21 +81,21 @@
         </div>
 
         <div class="grid grid-cols-3 gap-3 lg:col-span-5 lg:flex lg:flex-col">
-          <div class="card p-4 lg:flex-1">
+          <div class="card overflow-hidden border-l-4 border-l-[#C0392B] p-4 lg:flex-1">
             <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-[--text-muted]">Urgent</p>
             <div class="mt-2 font-mono text-3xl font-semibold" :class="urgentEmailCount > 0 ? 'text-[--critical]' : 'text-[--text-muted]'">
               {{ loading ? '--' : urgentEmailCount }}
             </div>
             <p class="mt-1 text-xs text-[--text-muted]">emails</p>
           </div>
-          <div class="card p-4 lg:flex-1">
+          <div class="card overflow-hidden border-l-4 border-l-[#A93226] p-4 lg:flex-1">
             <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-[--text-muted]">Hot</p>
             <div class="mt-2 font-mono text-3xl font-semibold" :class="hotLeadCount > 0 ? 'text-[--hot]' : 'text-[--text-muted]'">
               {{ loading ? '--' : hotLeadCount }}
             </div>
             <p class="mt-1 text-xs text-[--text-muted]">leads</p>
           </div>
-          <div class="card p-4 lg:flex-1">
+          <div class="card overflow-hidden border-l-4 border-l-[#2A4D88] p-4 lg:flex-1">
             <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-[--text-muted]">Action</p>
             <div class="mt-2 font-mono text-3xl font-semibold" :class="actionsNeeded > 0 ? 'text-[--accent]' : 'text-[--text-muted]'">
               {{ loading ? '--' : actionsNeeded }}

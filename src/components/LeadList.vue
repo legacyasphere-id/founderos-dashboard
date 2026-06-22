@@ -1,12 +1,13 @@
 <template>
-  <section class="card h-full p-4">
-    <div class="mb-4 flex items-center justify-between gap-3">
+  <section class="card h-full overflow-hidden">
+    <div class="flex items-center justify-between gap-3 border-b border-[--border] bg-[#2A4D88]/6 px-4 py-3">
       <div>
-        <h2 class="text-sm font-semibold text-[--text-primary]">Lead Pipeline</h2>
-        <p class="mt-1 text-xs text-[--text-muted]">Hot and warm uncontacted leads</p>
+        <h2 class="text-sm font-semibold text-[--accent]">Lead Pipeline</h2>
+        <p class="mt-0.5 text-xs text-[--text-muted]">Hot and warm uncontacted leads</p>
       </div>
       <span v-if="!loading" class="font-mono text-[11px] text-[--accent]">{{ leads.length }} active</span>
     </div>
+    <div class="p-4">
 
     <div v-if="loading" class="space-y-3">
       <div v-for="i in 4" :key="i" class="animate-pulse rounded-xl border border-[--border] bg-[--bg] p-3">
@@ -59,6 +60,7 @@
           <span class="mt-1 flex-shrink-0 font-mono text-[10px] text-[--text-muted]">{{ timeAgo(lead.created_at) }}</span>
         </div>
       </article>
+    </div>
     </div>
   </section>
 </template>

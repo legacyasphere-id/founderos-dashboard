@@ -1,14 +1,15 @@
 <template>
-  <section class="card h-full p-4">
-    <div class="mb-4 flex items-center justify-between gap-3">
+  <section class="card h-full overflow-hidden">
+    <div class="flex items-center justify-between gap-3 bg-[#2A4D88] px-4 py-3">
       <div>
-        <h2 class="text-sm font-semibold text-[--text-primary]">Today's Focus</h2>
-        <p class="mt-1 text-xs text-[--text-muted]">AI-generated daily summary</p>
+        <h2 class="text-sm font-semibold text-white">Today's Focus</h2>
+        <p class="mt-0.5 text-xs text-blue-200/70">AI-generated daily summary</p>
       </div>
-      <span v-if="briefing" class="rounded-full border border-[#2A4D88]/25 px-3 py-1 font-mono text-[11px] text-[--accent]">
+      <span v-if="briefing" class="rounded-full border border-white/20 bg-white/10 px-3 py-1 font-mono text-[11px] text-white/80">
         {{ timeAgo(briefing.created_at) }}
       </span>
     </div>
+    <div class="p-4">
 
     <div v-if="loading" class="space-y-3">
       <div v-for="i in 3" :key="i" class="animate-pulse rounded-xl border border-[--border] bg-[--bg] p-4">
@@ -58,6 +59,7 @@
           <p class="mt-1 text-[10px] text-[--text-muted]">hot leads</p>
         </div>
       </div>
+    </div>
     </div>
   </section>
 </template>
