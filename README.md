@@ -2,7 +2,7 @@
 
 > AI-native operating system for founders. One cockpit. Full business state in under 10 seconds.
 
-**Live**: https://founderos-dashboard-tan.vercel.app
+**Live**: (https://founderos-dashboard-cywjxjfrl-yoga-pratama-effendi-s-projects.vercel.app/)
 **Stack**: Vue 3 + Supabase + n8n + OpenRouter + Vercel
 
 ---
