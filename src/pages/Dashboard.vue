@@ -124,30 +124,13 @@
           <LeadList :leads="filteredLeads" :loading="loading" />
         </div>
 
-        <!-- Row 5: Operating Rhythm (6) + Signal Sources (6) -->
-        <div class="card p-4 lg:col-span-6">
-          <div class="mb-4 flex items-center justify-between">
-            <h2 class="text-sm font-semibold text-[--text-primary]">Operating Rhythm</h2>
-            <span class="font-mono text-[11px] text-[--text-muted]">07:00</span>
-          </div>
-          <div class="grid grid-cols-7 gap-2">
-            <div v-for="day in rhythmDays" :key="day.label" class="flex flex-col items-center gap-2">
-              <span class="font-mono text-[10px] text-[--text-muted]">{{ day.label }}</span>
-              <span
-                class="h-8 w-8 rounded-full border border-[--border]"
-                :class="day.active ? 'bg-[#2A4D88]' : 'bg-[--surface-2]'"
-              ></span>
-            </div>
-          </div>
-          <p class="mt-4 text-xs leading-5 text-[--text-muted]">Daily briefing runs every morning and turns business noise into priorities.</p>
-        </div>
-
-        <div class="card p-4 lg:col-span-6">
+        <!-- Row 5: Signal Sources (full width) -->
+        <div class="card p-4 lg:col-span-12">
           <div class="mb-4 flex items-center justify-between">
             <h2 class="text-sm font-semibold text-[--text-primary]">Signal Sources</h2>
             <span class="rounded-full border border-[#2A4D88]/25 px-2 py-1 font-mono text-[10px] text-[--accent]">n8n</span>
           </div>
-          <div class="space-y-3">
+          <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
             <div class="flex items-center justify-between rounded-xl bg-[--bg] p-3">
               <span class="text-xs text-[--text-secondary]">Gmail intelligence</span>
               <span class="font-mono text-xs text-[--text-primary]">{{ loading ? '--' : emails.length }}</span>
@@ -260,14 +243,6 @@ const lastUpdatedLabel = computed(() => {
   return lastUpdated.value.toLocaleTimeString('id-ID', {
     hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta'
   }) + ' WIB'
-})
-
-const rhythmDays = computed(() => {
-  const day = now.value.getDay()
-  return ['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((label, index) => ({
-    label,
-    active: index === day - 1 || (day === 0 && index === 6)
-  }))
 })
 
 const currentDate = computed(() =>
