@@ -1,5 +1,34 @@
 <template>
-  <section class="card h-full overflow-hidden">
+  <!-- Compact strip mode -->
+  <section v-if="compact" class="card overflow-hidden border-l-4 border-l-[#2A4D88]">
+    <div class="flex items-center gap-4 px-4 py-3">
+      <div class="flex-shrink-0">
+        <p class="font-mono text-[10px] uppercase tracking-[0.18em] text-[--accent]">Intelligence</p>
+        <p class="text-[10px] text-[--text-muted]">{{ briefing ? timeAgo(briefing.created_at) : '—' }}</p>
+      </div>
+      <div class="min-w-0 flex-1">
+        <p v-if="loading" class="animate-pulse rounded bg-[--surface-2] text-transparent text-xs">Loading briefing...</p>
+        <p v-else-if="briefing?.summary" class="line-clamp-2 text-xs leading-5 text-[--text-secondary]">{{ cleanBriefingText(briefing.summary) }}</p>
+        <p v-else class="text-xs text-[--text-muted]">No briefing yet. Runs daily at 07:00 WIB.</p>
+      </div>
+      <div v-if="briefing && !loading" class="flex flex-shrink-0 items-center gap-3">
+        <div class="text-center">
+          <div class="font-mono text-sm font-semibold" :class="urgentCount > 0 ? 'text-[--critical]' : 'text-[--text-muted]'">{{ urgentCount }}</div>
+          <p class="font-mono text-[9px] text-[--text-muted]">urgent</p>
+        </div>
+        <div class="text-center">
+          <div class="font-mono text-sm font-semibold" :class="hotCount > 0 ? 'text-[--hot]' : 'text-[--text-muted]'">{{ hotCount }}</div>
+          <p class="font-mono text-[9px] text-[--text-muted]">hot</p>
+        </div>
+        <div v-if="actionItems.length > 0" class="rounded-full bg-[#2A4D88]/10 px-2.5 py-1 font-mono text-[10px] text-[--accent]">
+          {{ actionItems.length }} actions
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Full card mode -->
+  <section v-else class="card h-full overflow-hidden">
     <div class="flex items-center justify-between gap-3 bg-[#2A4D88] px-4 py-3">
       <div>
         <h2 class="text-sm font-semibold text-white">Today's Focus</h2>
@@ -39,7 +68,7 @@
         </p>
         <ul class="mt-2 space-y-2">
           <li v-for="(item, i) in actionItems" :key="i" class="flex items-start gap-2 text-xs text-[--text-secondary]">
-            <span class="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[--accent]"></span>
+            <span class="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full bg-[#2A4D88]"></span>
             <span>{{ cleanBriefingText(item) }}</span>
           </li>
         </ul>
@@ -69,7 +98,8 @@ import { computed } from 'vue'
 
 const props = defineProps({
   briefing: { type: Object, default: null },
-  loading: { type: Boolean, default: false }
+  loading: { type: Boolean, default: false },
+  compact: { type: Boolean, default: false }
 })
 
 const actionItems = computed(() => {

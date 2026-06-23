@@ -22,10 +22,15 @@
               class="rounded-full px-4 py-1.5 text-xs transition"
             >Cockpit</button>
             <button
-              @click="setTab('briefing')"
-              :class="activeTab === 'briefing' ? 'bg-[#2A4D88] text-white shadow-sm' : 'text-[--text-muted] hover:text-[--text-primary]'"
+              @click="setTab('intelligence')"
+              :class="activeTab === 'intelligence' ? 'bg-[#2A4D88] text-white shadow-sm' : 'text-[--text-muted] hover:text-[--text-primary]'"
               class="rounded-full px-4 py-1.5 text-xs transition"
-            >Briefing</button>
+            >Intelligence</button>
+            <button
+              @click="setTab('crm')"
+              :class="activeTab === 'crm' ? 'bg-[#2A4D88] text-white shadow-sm' : 'text-[--text-muted] hover:text-[--text-primary]'"
+              class="rounded-full px-4 py-1.5 text-xs transition"
+            >CRM</button>
             <button
               @click="setTab('emails')"
               :class="activeTab === 'emails' ? 'bg-[#2A4D88] text-white shadow-sm' : 'text-[--text-muted] hover:text-[--text-primary]'"
@@ -37,10 +42,10 @@
               class="rounded-full px-4 py-1.5 text-xs transition"
             >Leads</button>
             <button
-              disabled
-              title="Coming in V1"
-              class="cursor-not-allowed rounded-full px-4 py-1.5 text-xs text-[--text-muted] opacity-40"
-            >Knowledge</button>
+              @click="setTab('projects')"
+              :class="activeTab === 'projects' ? 'bg-[#2A4D88] text-white shadow-sm' : 'text-[--text-muted] hover:text-[--text-primary]'"
+              class="rounded-full px-4 py-1.5 text-xs transition"
+            >Projects</button>
           </div>
         </div>
 
@@ -75,36 +80,43 @@
 
       <div class="grid grid-cols-1 gap-3 lg:grid-cols-12">
 
-        <!-- Row 1: CEO Briefing (7) + Stats (5) -->
-        <div ref="briefingRef" class="lg:col-span-7">
-          <BriefingCard :briefing="briefing" :loading="loading" />
+        <!-- Row 1: Intelligence strip (12) -->
+        <div ref="briefingRef" class="lg:col-span-12">
+          <BriefingCard :briefing="briefing" :loading="loading" compact />
         </div>
 
-        <div class="grid grid-cols-3 gap-3 lg:col-span-5 lg:flex lg:flex-col">
-          <div class="card overflow-hidden border-l-4 border-l-[#C0392B] p-4 lg:flex-1">
-            <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-[--text-muted]">Urgent</p>
-            <div class="mt-2 font-mono text-3xl font-semibold" :class="urgentEmailCount > 0 ? 'text-[--critical]' : 'text-[--text-muted]'">
-              {{ loading ? '--' : urgentEmailCount }}
-            </div>
-            <p class="mt-1 text-xs text-[--text-muted]">emails</p>
-          </div>
-          <div class="card overflow-hidden border-l-4 border-l-[#A93226] p-4 lg:flex-1">
-            <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-[--text-muted]">Hot</p>
-            <div class="mt-2 font-mono text-3xl font-semibold" :class="hotLeadCount > 0 ? 'text-[--hot]' : 'text-[--text-muted]'">
-              {{ loading ? '--' : hotLeadCount }}
-            </div>
-            <p class="mt-1 text-xs text-[--text-muted]">leads</p>
-          </div>
-          <div class="card overflow-hidden border-l-4 border-l-[#2A4D88] p-4 lg:flex-1">
-            <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-[--text-muted]">Action</p>
-            <div class="mt-2 font-mono text-3xl font-semibold" :class="actionsNeeded > 0 ? 'text-[--accent]' : 'text-[--text-muted]'">
-              {{ loading ? '--' : actionsNeeded }}
-            </div>
-            <p class="mt-1 text-xs text-[--text-muted]">items</p>
-          </div>
+        <!-- Row 2: CRM Intelligence (6) + Project Intelligence (6) -->
+        <div ref="crmRef" class="lg:col-span-6">
+          <CRMPanel :leads="leads" :emails="emails" :loading="loading" />
+        </div>
+        <div ref="projectsRef" class="lg:col-span-6">
+          <ProjectPanel :projects="projects" :loading="loading" />
         </div>
 
-        <!-- Row 2: Emails (7) + Leads (5) -->
+        <!-- Row 3: Stats (4+4+4) -->
+        <div class="card overflow-hidden border-l-4 border-l-[#C0392B] p-4 lg:col-span-4">
+          <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-[--text-muted]">Urgent</p>
+          <div class="mt-2 font-mono text-3xl font-semibold" :class="urgentEmailCount > 0 ? 'text-[--critical]' : 'text-[--text-muted]'">
+            {{ loading ? '--' : urgentEmailCount }}
+          </div>
+          <p class="mt-1 text-xs text-[--text-muted]">emails</p>
+        </div>
+        <div class="card overflow-hidden border-l-4 border-l-[#A93226] p-4 lg:col-span-4">
+          <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-[--text-muted]">Hot</p>
+          <div class="mt-2 font-mono text-3xl font-semibold" :class="hotLeadCount > 0 ? 'text-[--hot]' : 'text-[--text-muted]'">
+            {{ loading ? '--' : hotLeadCount }}
+          </div>
+          <p class="mt-1 text-xs text-[--text-muted]">leads</p>
+        </div>
+        <div class="card overflow-hidden border-l-4 border-l-[#2A4D88] p-4 lg:col-span-4">
+          <p class="font-mono text-[10px] uppercase tracking-[0.22em] text-[--text-muted]">Action</p>
+          <div class="mt-2 font-mono text-3xl font-semibold" :class="actionsNeeded > 0 ? 'text-[--accent]' : 'text-[--text-muted]'">
+            {{ loading ? '--' : actionsNeeded }}
+          </div>
+          <p class="mt-1 text-xs text-[--text-muted]">items</p>
+        </div>
+
+        <!-- Row 4: Emails (7) + Leads (5) -->
         <div ref="emailsRef" class="lg:col-span-7">
           <EmailList :emails="filteredEmails" :loading="loading" />
         </div>
@@ -112,7 +124,7 @@
           <LeadList :leads="filteredLeads" :loading="loading" />
         </div>
 
-        <!-- Row 3: Operating Rhythm (6) + Signal Sources (6) -->
+        <!-- Row 5: Operating Rhythm (6) + Signal Sources (6) -->
         <div class="card p-4 lg:col-span-6">
           <div class="mb-4 flex items-center justify-between">
             <h2 class="text-sm font-semibold text-[--text-primary]">Operating Rhythm</h2>
@@ -123,7 +135,7 @@
               <span class="font-mono text-[10px] text-[--text-muted]">{{ day.label }}</span>
               <span
                 class="h-8 w-8 rounded-full border border-[--border]"
-                :class="day.active ? 'bg-[--accent]' : 'bg-[--surface-2]'"
+                :class="day.active ? 'bg-[#2A4D88]' : 'bg-[--surface-2]'"
               ></span>
             </div>
           </div>
@@ -148,6 +160,10 @@
               <span class="text-xs text-[--text-secondary]">CEO briefing</span>
               <span class="font-mono text-xs text-[--text-primary]">{{ briefing ? 'ready' : 'empty' }}</span>
             </div>
+            <div class="flex items-center justify-between rounded-xl bg-[--bg] p-3">
+              <span class="text-xs text-[--text-secondary]">Active projects</span>
+              <span class="font-mono text-xs text-[--text-primary]">{{ loading ? '--' : projects.length }}</span>
+            </div>
           </div>
         </div>
 
@@ -162,10 +178,13 @@ import { supabase } from '../services/supabase.js'
 import EmailList from '../components/EmailList.vue'
 import LeadList from '../components/LeadList.vue'
 import BriefingCard from '../components/BriefingCard.vue'
+import CRMPanel from '../components/CRMPanel.vue'
+import ProjectPanel from '../components/ProjectPanel.vue'
 
 const emails = ref([])
 const leads = ref([])
 const briefing = ref(null)
+const projects = ref([])
 const loading = ref(true)
 const error = ref(null)
 const now = ref(new Date())
@@ -175,6 +194,8 @@ const lastUpdated = ref(null)
 const briefingRef = ref(null)
 const emailsRef = ref(null)
 const leadsRef = ref(null)
+const crmRef = ref(null)
+const projectsRef = ref(null)
 let clockTimer = null
 
 const urgentEmailCount = computed(() =>
@@ -277,9 +298,11 @@ function scrollToSection(sectionRef) {
 
 function setTab(tab) {
   activeTab.value = tab
-  if (tab === 'briefing') scrollToSection(briefingRef)
+  if (tab === 'intelligence') scrollToSection(briefingRef)
+  else if (tab === 'crm') scrollToSection(crmRef)
   else if (tab === 'emails') scrollToSection(emailsRef)
   else if (tab === 'leads') scrollToSection(leadsRef)
+  else if (tab === 'projects') scrollToSection(projectsRef)
 }
 
 async function fetchData() {
@@ -288,7 +311,7 @@ async function fetchData() {
 
   const since48h = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString()
 
-  const [emailRes, leadRes, briefingRes] = await Promise.all([
+  const [emailRes, leadRes, briefingRes, projectRes] = await Promise.all([
     supabase
       .from('email_intelligence')
       .select('subject, sender_name, urgency_level, urgency_score, action_required, action_items, recommended_response, received_at, email_category, thread_id')
@@ -310,18 +333,27 @@ async function fetchData() {
       .select('id, created_at, summary, urgent_emails, hot_leads, action_items')
       .order('created_at', { ascending: false })
       .limit(1)
-      .maybeSingle()
+      .maybeSingle(),
+
+    supabase
+      .from('projects')
+      .select('id, name, client, status, progress, next_action, blocker, due_date, updated_at')
+      .in('status', ['active', 'at_risk', 'blocked'])
+      .order('updated_at', { ascending: false })
+      .limit(10)
   ])
 
   const errors = []
   if (emailRes.error) errors.push(`Emails: ${emailRes.error.message}`)
   if (leadRes.error) errors.push(`Leads: ${leadRes.error.message}`)
   if (briefingRes.error) errors.push(`Briefing: ${briefingRes.error.message}`)
+  if (projectRes.error) errors.push(`Projects: ${projectRes.error.message}`)
 
   error.value = errors.length ? errors.join(' | ') : null
   emails.value = emailRes.data || []
   leads.value = leadRes.data || []
   briefing.value = briefingRes.data || null
+  projects.value = projectRes.data || []
   lastUpdated.value = new Date()
   loading.value = false
 }
