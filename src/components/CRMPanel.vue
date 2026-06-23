@@ -119,7 +119,7 @@ function urgencyBadge(level) {
 function openEmail(email) {
   const id = email.thread_id || email.message_id || email.gmail_thread_id
   if (id) {
-    window.open(`https://mail.google.com/mail/#inbox/${id}`, '_blank')
+    window.open(`https://mail.google.com/mail/u/0/#inbox/${id}`, '_blank')
   } else if (email.gmail_link) {
     window.open(email.gmail_link, '_blank')
   }
